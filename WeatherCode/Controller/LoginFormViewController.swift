@@ -17,21 +17,13 @@ class LoginFormViewController: UIViewController {
         scrollView.showsVerticalScrollIndicator = true
         scrollView.isDirectionalLockEnabled = true
         scrollView.showsHorizontalScrollIndicator = false
-        //scrollView.backgroundColor = .blue
-      //  scrollView.frame = view.bounds
-      //  scrollView.contentSize = contentSize
         return scrollView
     }()
-    
-//    private var contentSize: CGSize {
-//        CGSize(width: view.frame.width, height: view.frame.height + 400)
-//    }
     
     private lazy var titleWeather: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 40)
-      //  label.font = UIFont(name: "", size: 40)
         label.text = "Weather"
         return label
     }()
@@ -77,9 +69,10 @@ class LoginFormViewController: UIViewController {
         button.layer.borderColor = UIColor.black.cgColor
         button.layer.borderWidth = 2
         button.layer.cornerRadius = 7
-        button.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
+        button.addTarget(self, action:  #selector(loginButtonPressed), for: .touchUpInside)
         return button
     }()
+    
     
     //MARK: - Life Cicle
     
@@ -91,7 +84,7 @@ class LoginFormViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        inputButton.addTarget(self, action:  #selector(loginButtonPressed), for: .touchUpInside)
         //убираем клавиатуру по нажатию
         hideKeyboardGesture()
         
@@ -125,6 +118,7 @@ class LoginFormViewController: UIViewController {
         scrollView.addSubview(passwordTitle)
         scrollView.addSubview(passwordTextField)
         scrollView.addSubview(inputButton)
+       
     }
     
     private func createUIConstraints() {
@@ -156,7 +150,8 @@ class LoginFormViewController: UIViewController {
             
             inputButton.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 40),
             inputButton.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            inputButton.widthAnchor.constraint(equalToConstant: scrollView.bounds.width / 2),
+            inputButton.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor, constant: 20),
+            inputButton.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor, constant: 20),
             inputButton.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor, constant: 20)
         ])
     }
@@ -164,15 +159,29 @@ class LoginFormViewController: UIViewController {
     // MARK: - objc && func
     
     @objc func loginButtonPressed(_ sender: UIButton!) {
+        
         let login = loginTextField.text
         let password = passwordTextField.text
         
-        if login == "admin" && password == "123456" {
-            print("Успешная авторизация")
+        if login == "" && password == "" {
+            showNextController()
         } else {
-            print("Неуспешная авторизация")
+            showLoginError()
         }
         
+    }
+    
+    private func showLoginError() {
+        let alertController = UIAlertController(title: "Ошибка", message: "Введены не верные данные пользователя", preferredStyle: .alert)
+        let alertAction = UIAlertAction(title: "Ок", style: .cancel)
+        alertController.addAction(alertAction)
+        present(alertController, animated: true)
+    }
+    
+    private func showNextController() {
+        let storyboardInstance = UIStoryboard(name: "Main", bundle: nil)
+        let myCityController = storyboardInstance.instantiateViewController(withIdentifier: "myCityViewController")
+        self.navigationController?.pushViewController(myCityController, animated: true)
     }
     
     private func hideKeyboardGesture() {
